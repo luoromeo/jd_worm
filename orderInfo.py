@@ -35,26 +35,37 @@ sys.setdefaultencoding('utf-8')
 
 my_order = BeautifulSoup(open('order.html').read(), "html.parser")
 my_order_tbodys = my_order.find_all('tbody')
+
+
 # my_order_tbody = my_order_tbodys[0]
 # print my_order_tbody
 # id = my_order_tbody['id']
 
-def getOrderInfo(my_order_tbody):
-    orderId = id.encode().strip('tb-')  # 订单号
-    trs = my_order_tbody.find_all('tr', attrs={'class': 'tr-bd'})
-    for tr in trs:
-        if tr.get('id') is None:
-            continue
-        productId = tr.find('span', attrs={'class': 'o-match J-o-match'})['data-sku']  # 商品id
-        goodsNumber = tr.find('div', attrs={'class': 'goods-number'}).text.encode('utf-8').strip().strip('x')
-    dealtime = my_order_tbody.find('span', attrs={'class': 'dealtime'})['title']  # 订单时间
-    amount_div = my_order_tbody.find('div', attrs={'class': 'amount'})
-    amount_str = amount_div.contents[1].text.encode('utf-8')
-    amount = re.findall(r'¥(.+)', amount_str)[0]
-    pay_type = amount_div.contents[5].text.encode('utf-8')
-    print dealtime
-    print amount
-    print pay_type
+def getTbodyInfo(my_order_tbody):
+    a_list = my_order_tbody.find_all('a')
+    for a in a_list:
+        if '订单详情' in a.text:
+            details_url = 'https:' + a['href']
+            if 'details.jd.com' in details_url:
+                print details_url
+            elif 'home.jd.hk' in details_url:
+                print '海外购'
+            # orderId = id.encode().strip('tb-')  # 订单号
+            # trs = my_order_tbody.find_all('tr', attrs={'class': 'tr-bd'})
+            # for tr in trs:
+            #     if tr.get('id') is None:
+            #         continue
+            #     productId = tr.find('span', attrs={'class': 'o-match J-o-match'})['data-sku']  # 商品id
+            #     goodsNumber = tr.find('div', attrs={'class': 'goods-number'}).text.encode('utf-8').strip().strip('x')
+            # dealtime = my_order_tbody.find('span', attrs={'class': 'dealtime'})['title']  # 订单时间
+            # amount_div = my_order_tbody.find('div', attrs={'class': 'amount'})
+            # amount_str = amount_div.contents[1].text.encode('utf-8')
+            # amount = re.findall(r'¥(.+)', amount_str)[0]
+            # pay_type = amount_div.contents[5].text.encode('utf-8')
+            # print dealtime
+            # print amount
+            # print pay_type
+
 
 for my_order_tbody in my_order_tbodys:
     id = my_order_tbody['id']
@@ -70,7 +81,7 @@ for my_order_tbody in my_order_tbodys:
             order_status = tbody.find('span', attrs={'class': 'order-status'}).text.encode('utf-8').strip()
             if order_status != '已完成':
                 continue
-            getOrderInfo(tbody)
+            getTbodyInfo(tbody)
             # orderId = id.encode().strip('tb-')  # 订单号
             # trs = tbody.find_all('tr', attrs={'class': 'tr-bd'})
             # for tr in trs:
@@ -92,4 +103,4 @@ for my_order_tbody in my_order_tbodys:
         order_status = my_order_tbody.find('span', attrs={'class': 'order-status'}).text.encode('utf-8').strip()
         if order_status != '已完成':
             continue
-        getOrderInfo(my_order_tbody)
+        getTbodyInfo(my_order_tbody)
